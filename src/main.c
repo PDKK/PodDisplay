@@ -238,6 +238,8 @@ int rmx,rmy;
 void createCylinderMatrix(kmMat4 * model, float x1, float y1, float z1, float x2, float y2, float z2)
 {
     kmMat4 scaleMatrix;
+    kmMat4 rotateYMatrix;
+    kmMat4 rotateZMatrix;
 
     float dx = x2 - x1;
     float dy = y2 - y1;
@@ -245,12 +247,12 @@ void createCylinderMatrix(kmMat4 * model, float x1, float y1, float z1, float x2
     float l = sqrt(dx*dx + dy*dy + dz*dz);
     float ry = asin(dz/l);
     float rz = atan(dy/dx);
-    float rad = 1;
-    kmMat4Identity(model);
-    kmMat4Translation(model, 1, 0, 0);
-    kmMat4RotationPitchYawRoll(model, rad, rad * 1.5, rad * 2);
-    kmMat4Identity(&scaleMatrix);
-    kmMat4Scaling(&scaleMatrix, 0.1, 0.1, 1.0);
+    kmMat4RotationX(&rotateYMatrix, ry);
+    kmMat4RotationZ(&rotateZMatrix, rz);
+    kmMat4Scaling(&scaleMatrix, 0.1, 0.1, l);
+    kmMat4Translation(model, x1, y1, z1);
+    //kmMat4Multiply(model, model, &rotateZMatrix);
+    //kmMat4Multiply(model, model, &rotateYMatrix);
     kmMat4Multiply(model, model, &scaleMatrix);
 }
 
@@ -290,29 +292,20 @@ void render()
     kmMat4Multiply(&vp, &vp, &view);
 
 
-    // first set the model matrix with the models position (translation)
-    // and rotation
-    // as translation and rotation use different parts of the matrix
-    // we can do both to the same matrix without having to multiply
-    // (combine) two seperate matrices
-    kmMat4Identity(&model);
-    kmMat4Translation(&model, 1, 0, 0);
-    kmMat4RotationPitchYawRoll(&model, rad, rad * 1.5, rad * 2);
-    kmMat4Identity(&tempMatrix);
-    kmMat4Scaling(&tempMatrix, 0.1, 0.1, 1.0);
-    kmMat4Multiply(&model, &model, &tempMatrix);
-    // copy the combined view/projection matrix to the mvp matrix
-    // to "reset" it
-    // and then combine with the model matrix
+    createCylinderMatrix(&model, 1, 0, 0, 1, 1, 0);
     kmMat4Assign(&mvp, &vp);
     kmMat4Multiply(&mvp, &mvp, &model);	// model, view, projection combined matrix
-
-    // combine the view and model matrices
     kmMat4Assign(&mv, &view);
     kmMat4Multiply(&mv, &mv, &model);	// view, model matrix for lighting
-
     glBindTexture(GL_TEXTURE_2D, cubeTex);
-    //drawObj(&cubeObj, &mvp, &mv,lightDir,viewDir);
+    drawObj(&cylObj, &mvp, &mv,lightDir,viewDir);
+
+    createCylinderMatrix(&model, 1.1, 0.1, 0.1, 1.1, 1.1, 0.1);
+    kmMat4Assign(&mvp, &vp);
+    kmMat4Multiply(&mvp, &mvp, &model);	// model, view, projection combined matrix
+    kmMat4Assign(&mv, &view);
+    kmMat4Multiply(&mv, &mv, &model);	// view, model matrix for lighting
+    glBindTexture(GL_TEXTURE_2D, cubeTex);
     drawObj(&cylObj, &mvp, &mv,lightDir,viewDir);
 
 //	----
