@@ -234,6 +234,26 @@ int main()
 
 int rmx,rmy;
 
+
+void createCylinderMatrix(kmMat4 * model, float x1, float y1, float z1, float x2, float y2, float z2)
+{
+    kmMat4 scaleMatrix;
+
+    float dx = x2 - x1;
+    float dy = y2 - y1;
+    float dz = z2 - z1;
+    float l = sqrt(dx*dx + dy*dy + dz*dz);
+    float ry = asin(dz/l);
+    float rz = atan(dy/dx);
+    float rad = 1;
+    kmMat4Identity(model);
+    kmMat4Translation(model, 1, 0, 0);
+    kmMat4RotationPitchYawRoll(model, rad, rad * 1.5, rad * 2);
+    kmMat4Identity(&scaleMatrix);
+    kmMat4Scaling(&scaleMatrix, 0.1, 0.1, 1.0);
+    kmMat4Multiply(model, model, &scaleMatrix);
+}
+
 void render()
 {
 
