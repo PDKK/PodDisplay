@@ -238,6 +238,7 @@ void render()
 {
 
     float rad;		// radians of rotation based on frame counter
+    kmMat4 tempMatrix;
 
     // clear the colour (drawing) and depth sort back (offscreen) buffers
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -277,7 +278,9 @@ void render()
     kmMat4Identity(&model);
     kmMat4Translation(&model, 1, 0, 0);
     kmMat4RotationPitchYawRoll(&model, rad, rad * 1.5, rad * 2);
-
+    kmMat4Identity(&tempMatrix);
+    kmMat4Scaling(&tempMatrix, 0.1, 0.1, 1.0);
+    kmMat4Multiply(&model, &model, &tempMatrix);
     // copy the combined view/projection matrix to the mvp matrix
     // to "reset" it
     // and then combine with the model matrix
