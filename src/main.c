@@ -10,6 +10,7 @@
 #include "keys.h"		// defines key indexes for key down boolean array
 #include "obj.h"		// loading and displaying wavefront OBJ derived shapes
 #include "input.h"
+#include "primitive.h"
 
 #include <stdlib.h>
 #include <stdbool.h>
@@ -110,7 +111,7 @@ void render();			// func prototype
 GLuint cubeTex,ballTex;
 
 // structures holding various pointers and handles for obj shapes
-struct obj_t cubeObj,ballObj;
+struct obj_t cubeObj,ballObj,cylObj;
 
 // matrices and combo matrices
 kmMat4 model, view, projection, mvp, vp, mv;
@@ -143,6 +144,8 @@ int main()
     cubeTex = loadPNG("resources/textures/grey.png");
     createObj(&cubeObj, cubeNumVerts, cubeVerts, cubeTexCoords, cubeNormals,
               "resources/shaders/textured.vert", "resources/shaders/textured.frag");
+
+    createCylinder(&cylObj);
 
     // embedding data can waste precious ram, loading from disk is more efficient
     // no redundant data left when verts transfered to GPU
@@ -286,7 +289,8 @@ void render()
     kmMat4Multiply(&mv, &mv, &model);	// view, model matrix for lighting
 
     glBindTexture(GL_TEXTURE_2D, cubeTex);
-    drawObj(&cubeObj, &mvp, &mv,lightDir,viewDir);
+    //drawObj(&cubeObj, &mvp, &mv,lightDir,viewDir);
+    drawObj(&cylObj, &mvp, &mv,lightDir,viewDir);
 
 //	----
 
