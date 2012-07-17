@@ -4,7 +4,7 @@ HDRFILES := $(shell find $(MODULES) -type f -name "*.h")
 OBJFILES := $(patsubst %.c,%.o,$(C_SRC))
 DEPFILES := $(patsubst %.c,%.d,$(C_SRC))
 
-.PHONY: all clean
+.PHONY: all clean tags
 
 WARNINGS := -Wall -Wextra -pedantic -Wshadow -Wpointer-arith -Wcast-align \
 	        -Wwrite-strings -Wmissing-prototypes -Wmissing-declarations \
@@ -46,6 +46,8 @@ doublepod: $(OBJFILES)
 clean:
 	$(RM) $(wildcard $(OBJFILES) $(DEPFILES))
 
+tags:
+	ctags --sort=yes --c++-kinds=+p --fields=+iaS --extra=+q $(C_SRC) $(HDRFILES)
 
 -include $(DEPFILES)
 
