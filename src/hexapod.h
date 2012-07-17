@@ -1,18 +1,23 @@
+
 typedef struct {
     kmVec3 node[6];
-} nodeset;
-
-typedef struct {
     kmVec3 position;
     kmVec3 rotation;
-} location;
+} top_bottom_location_t;
 
 typedef struct {
-    nodeset base;
-    nodeset middleBottom;
-    nodeset middleTop;
-    nodeset top;
-    location baseLocation;
-    location midLocation;
-    location topLocation;
+    kmVec3 lowerNode[6];
+    kmVec3 upperNode[6];
+    kmVec3 position;
+    kmVec3 rotation;
+} middle_location_t;
+
+typedef struct {
+    top_bottom_location_t baseLocation;
+    middle_location_t midLocation;
+    top_bottom_location_t topLocation;
 } doublepod;
+
+
+void drawDoublePod(doublepod * pod); 
+void initDoublePod(doublepod * pod); 

@@ -18,6 +18,7 @@
 
 #include <kazmath.h>		// matrix manipulation routines
 
+#include "hexapod.h"
 
 unsigned int cubeNumVerts = 36;
 
@@ -127,9 +128,11 @@ bool *keys;
 int *mouse;
 struct joystick_t *joy1;
 
+doublepod pod;
+
 int main()
 {
-	
+	float deltaMove;
 	
     // creates a window and GLES context
     if (makeContext() != 0)
@@ -152,6 +155,8 @@ int main()
     loadObjCopyShader(&ballObj,"resources/models/sphere.gbo",&cubeObj);
     ballTex = loadPNG("resources/textures/red.png");
 
+    initDoublePod(&pod); 
+
     kmMat4Identity(&view);
 
     pEye.x = 5;
@@ -159,7 +164,7 @@ int main()
     pEye.z = 5;
     pCenter.x = 0;
     pCenter.y = 0;
-    pCenter.z = 0;
+    pCenter.z = 1;
     pUp.x = 0;
     pUp.y = 0;
     pUp.z = 1;
@@ -193,7 +198,7 @@ int main()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glDisable(GL_BLEND);
     glEnable(GL_DEPTH_TEST);
-    glClearColor(0, 0.5, 1, 1);
+    glClearColor(0.1, 0.1, 0.1, 1);
 
     // count each frame
     int num_frames = 0;
@@ -219,7 +224,10 @@ int main()
         if (keys[KEY_S]) camAng=camAng-1;
         if (keys[KEY_W]) lightAng=lightAng+1;
         if (keys[KEY_Q]) lightAng=lightAng-1;
-
+        deltaMove = keys[KEY_LSHIFT] ? 0.01 : -0.01;
+        if (keys[KEY_X]) pod.topLocation.position.x += deltaMove;
+        if (keys[KEY_Y]) pod.topLocation.position.y += deltaMove;
+        if (keys[KEY_Z]) pod.topLocation.position.z += deltaMove;
         render();	// the render loop
 
         usleep(16000);	// no need to run cpu/gpu full tilt
@@ -344,10 +352,10 @@ void render()
     kmMat4Multiply(&vp, &vp, &view);
 
 
-    renderLegWithJoints( 1, 0, 0, 1, 0, 1);
+    //renderLegWithJoints( 1, 0, 0, 1, 0, 1);
 
-    renderLegWithJoints( 1, 0, 0, 1, 1, 1);
-
+    //renderLegWithJoints( 1, 0, 0, 1, 1, 1);
+    drawDoublePod(&pod);
 //	----
 
 
