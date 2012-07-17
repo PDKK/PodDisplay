@@ -154,15 +154,15 @@ int main()
 
     kmMat4Identity(&view);
 
-    pEye.x = 0;
-    pEye.y = 0;
+    pEye.x = 5;
+    pEye.y = -5;
     pEye.z = 5;
     pCenter.x = 0;
     pCenter.y = 0;
     pCenter.z = 0;
     pUp.x = 0;
-    pUp.y = 1;
-    pUp.z = 0;
+    pUp.y = 0;
+    pUp.z = 1;
 
     kmVec3Subtract(&viewDir,&pEye,&pCenter);
     kmVec3Normalize(&viewDir,&viewDir);
@@ -253,12 +253,59 @@ void createCylinderMatrix(kmMat4 * model, float x1, float y1, float z1, float x2
     kmVec3Fill(&v2, 0, 0, 1);
     kmVec3Cross(&cross, &v2, &v1);
     dotProduct = kmVec3Dot(&v1,&v2);
-
-    kmMat4RotationAxisAngle(&rotateMatrix, &cross, acos(dotProduct));
+    if (abs(dotProduct) > 0.99999999) {
+        kmMat4Identity(&rotateMatrix);
+    } else {
+        kmMat4RotationAxisAngle(&rotateMatrix, &cross, acos(dotProduct));
+    }
     kmMat4Scaling(&scaleMatrix, 0.1, 0.1, l);
     kmMat4Translation(model, x1, y1, z1);
     kmMat4Multiply(model, model, &rotateMatrix);
     kmMat4Multiply(model, model, &scaleMatrix);
+}
+
+
+void renderLegWithJoints(float x1, float y1, float z1, float x2, float y2, float z2) {
+    kmMat4 scaleMatrix;
+    createCylinderMatrix(&model, x1, y1, z1, x2, y2, z2);
+    kmMat4Assign(&mvp, &vp);
+    kmMat4Multiply(&mvp, &mvp, &model);	// model, view, projection combined matrix
+    kmMat4Assign(&mv, &view);
+    kmMat4Multiply(&mv, &mv, &model);	// view, model matrix for lighting
+    glBindTexture(GL_TEXTURE_2D, cubeTex);
+    drawObj(&cylObj, &mvp, &mv,lightDir,viewDir);
+
+//	----
+
+    kmMat4Identity(&model);
+    kmMat4Translation(&model, x1, y1, z1);
+    kmMat4Scaling(&scaleMatrix, 0.05, 0.05, 0.05);
+    kmMat4Multiply(&model, &model, &scaleMatrix);	// model, view, projection combined matrix
+    kmMat4Assign(&mvp, &vp);
+    kmMat4Multiply(&mvp, &mvp, &model);	// model, view, projection combined matrix
+    kmMat4Assign(&mv, &view);
+    kmMat4Multiply(&mv, &mv, &model);	// view, model matrix for lighting
+
+    glBindTexture(GL_TEXTURE_2D, ballTex);
+    drawObj(&ballObj, &mvp, &mv,lightDir,viewDir);
+
+//	----
+
+//	----
+
+    kmMat4Identity(&model);
+    kmMat4Translation(&model, x2, y2, z2);
+    kmMat4Scaling(&scaleMatrix, 0.05, 0.05, 0.05);
+    kmMat4Multiply(&model, &model, &scaleMatrix);	// model, view, projection combined matrix
+    kmMat4Assign(&mvp, &vp);
+    kmMat4Multiply(&mvp, &mvp, &model);	// model, view, projection combined matrix
+    kmMat4Assign(&mv, &view);
+    kmMat4Multiply(&mv, &mv, &model);	// view, model matrix for lighting
+
+    glBindTexture(GL_TEXTURE_2D, ballTex);
+    drawObj(&ballObj, &mvp, &mv,lightDir,viewDir);
+
+//	----
 }
 
 void render()
@@ -281,8 +328,8 @@ void render()
 
 
     pEye.x=cos(camAng/10.)*7.;
-    pEye.z=sin(camAng/10.)*7.;
-    pEye.y=1;
+    pEye.y=sin(camAng/10.)*7.;
+    pEye.z=5;
 
     // recalculate the view direction vector used by lighting
     kmVec3Subtract(&viewDir,&pEye,&pCenter);
@@ -297,51 +344,12 @@ void render()
     kmMat4Multiply(&vp, &vp, &view);
 
 
-    createCylinderMatrix(&model, 1, 0, 0, 1, 1, 0);
-    kmMat4Assign(&mvp, &vp);
-    kmMat4Multiply(&mvp, &mvp, &model);	// model, view, projection combined matrix
-    kmMat4Assign(&mv, &view);
-    kmMat4Multiply(&mv, &mv, &model);	// view, model matrix for lighting
-    glBindTexture(GL_TEXTURE_2D, cubeTex);
-    drawObj(&cylObj, &mvp, &mv,lightDir,viewDir);
+    renderLegWithJoints( 1, 0, 0, 1, 0, 1);
 
-    createCylinderMatrix(&model, 1.1, 0, 0, 1, 1, 1);
-    kmMat4Assign(&mvp, &vp);
-    kmMat4Multiply(&mvp, &mvp, &model);	// model, view, projection combined matrix
-    kmMat4Assign(&mv, &view);
-    kmMat4Multiply(&mv, &mv, &model);	// view, model matrix for lighting
-    glBindTexture(GL_TEXTURE_2D, cubeTex);
-    drawObj(&cylObj, &mvp, &mv,lightDir,viewDir);
+    renderLegWithJoints( 1, 0, 0, 1, 1, 1);
 
 //	----
 
-    kmMat4Identity(&model);
-    kmMat4Translation(&model, 1, 0, 0);
-    kmMat4Scaling(&scaleMatrix, 0.05, 0.05, 0.05);
-    kmMat4Multiply(&model, &model, &scaleMatrix);	// model, view, projection combined matrix
-    kmMat4Assign(&mvp, &vp);
-    kmMat4Multiply(&mvp, &mvp, &model);	// model, view, projection combined matrix
-    kmMat4Assign(&mv, &view);
-    kmMat4Multiply(&mv, &mv, &model);	// view, model matrix for lighting
-
-    glBindTexture(GL_TEXTURE_2D, ballTex);
-    drawObj(&ballObj, &mvp, &mv,lightDir,viewDir);
-
-//	----
-
-//	----
-
-    kmMat4Identity(&model);
-    kmMat4Translation(&model, 1, 1, 0);
-    kmMat4Scaling(&scaleMatrix, 0.05, 0.05, 0.05);
-    kmMat4Multiply(&model, &model, &scaleMatrix);	// model, view, projection combined matrix
-    kmMat4Assign(&mvp, &vp);
-    kmMat4Multiply(&mvp, &mvp, &model);	// model, view, projection combined matrix
-    kmMat4Assign(&mv, &view);
-    kmMat4Multiply(&mv, &mv, &model);	// view, model matrix for lighting
-
-    glBindTexture(GL_TEXTURE_2D, ballTex);
-    drawObj(&ballObj, &mvp, &mv,lightDir,viewDir);
 
 //	----
 
