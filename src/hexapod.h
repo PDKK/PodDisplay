@@ -21,3 +21,4 @@ typedef struct {
 
 void drawDoublePod(doublepod * pod); 
 void initDoublePod(doublepod * pod); 
+void placePlatform(doublepod * pod, kmVec3 * position, kmVec3 * rotation); 

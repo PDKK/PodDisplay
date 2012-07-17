@@ -164,7 +164,7 @@ int main()
     pEye.z = 5;
     pCenter.x = 0;
     pCenter.y = 0;
-    pCenter.z = 1;
+    pCenter.z = 0;
     pUp.x = 0;
     pUp.y = 0;
     pUp.z = 1;
@@ -199,6 +199,7 @@ int main()
     glDisable(GL_BLEND);
     glEnable(GL_DEPTH_TEST);
     glClearColor(0.1, 0.1, 0.1, 1);
+    glClearDepthf(1.0);
 
     // count each frame
     int num_frames = 0;
@@ -228,6 +229,7 @@ int main()
         if (keys[KEY_X]) pod.topLocation.position.x += deltaMove;
         if (keys[KEY_Y]) pod.topLocation.position.y += deltaMove;
         if (keys[KEY_Z]) pod.topLocation.position.z += deltaMove;
+        placePlatform(&pod, &pod.topLocation.position, &pod.topLocation.position);
         render();	// the render loop
 
         usleep(16000);	// no need to run cpu/gpu full tilt
@@ -352,27 +354,13 @@ void render()
     kmMat4Multiply(&vp, &vp, &view);
 
 
-    //renderLegWithJoints( 1, 0, 0, 1, 0, 1);
-
-    //renderLegWithJoints( 1, 0, 0, 1, 1, 1);
     drawDoublePod(&pod);
-//	----
-
-
-//	----
-
 
     // see printf documentation for the formatting of variables...
-    glPrintf(100, 240, "frame=%i", frame);
-
-    glPrintf(100, 260, "mouse %i  %i   %i", mouse[0],mouse[1],mouse[2]);
-
-	glPrintf(100, 280, "joystick %i,%i  %i",joy1->axis[0],joy1->axis[1],joy1->buttons);
+    glPrintf(100, 20, "frame=%i", frame);
+    glPrintf(100, 40, "mouse %i  %i   %i", mouse[0],mouse[1],mouse[2]);
+	glPrintf(100, 60, "joystick %i,%i  %i",joy1->axis[0],joy1->axis[1],joy1->buttons);
 	 
-    //rmx+=mouse[0];
-    //rmy+=mouse[1];
-    //glPrintf(100, 280, "%i  %i", rmx,rmy);
-
     // swap the front (visible) buffer for the back (offscreen) buffer
     swapBuffers();
 
