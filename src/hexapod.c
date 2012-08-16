@@ -14,10 +14,10 @@
 #include "hexapod.h"
 
 void initDoublePod(doublepod * pod) {
-    float rb = 1.6;
-    float rmb = 1.2;
-    float rmt = 1.0;
-    float rt = 0.7;
+    float rb = 0.8;
+    float rmb = 0.6;
+    float rmt = 0.5;
+    float rt = 0.35;
     kmVec3Fill(&pod->baseLocation.node[0], 0.5*rb, 0.866*rb,0);
     kmVec3Fill(&pod->baseLocation.node[1], 1*rb,0*rb,0);
     kmVec3Fill(&pod->baseLocation.node[2], 0.5*rb, -0.866,0);
@@ -42,9 +42,9 @@ void initDoublePod(doublepod * pod) {
     kmVec3Fill(&pod->topLocation.node[3], -0.1, -1.0*rt,-0.1);
     kmVec3Fill(&pod->topLocation.node[4], -0.866*rt-.5*.1,0.5*rt-0.866*.1,-0.1);
     kmVec3Fill(&pod->topLocation.node[5], -0.866*rt+.5*.1,0.5*rt+0.866*.1,-0.1);
-    kmVec3Fill(&pod->baseLocation.position, 0,0,-2);
+    kmVec3Fill(&pod->baseLocation.position, 0,0,-1);
     kmVec3Fill(&pod->midLocation.position, 0,0,0);
-    kmVec3Fill(&pod->topLocation.position, 0,0,2);
+    kmVec3Fill(&pod->topLocation.position, 0,0,1);
 }
 
 void placePlatform(doublepod * pod, kmVec3 * position, kmVec3 * rotation) {
@@ -69,4 +69,5 @@ void drawDoublePod(doublepod * pod) {
         kmVec3Add(&n2, &pod->topLocation.position, &pod->topLocation.node[leg]);
         renderLegWithJoints(n1.x, n1.y, n1.z, n2.x, n2.y, n2.z);
     }
+    
 }

@@ -19,6 +19,7 @@
 #include <kazmath.h>		// matrix manipulation routines
 
 #include "hexapod.h"
+#define DEGREES_TO_RADIANS(x) ((x)*3.141592654/180.0)
 
 unsigned int cubeNumVerts = 36;
 
@@ -133,7 +134,7 @@ doublepod pod;
 int main()
 {
 	float deltaMove;
-	
+	GLfloat size, aspectRatio;
     // creates a window and GLES context
     if (makeContext() != 0)
         exit(-1);
@@ -183,10 +184,9 @@ int main()
     // the way the model is drawn is effected
     kmMat4Identity(&projection);
     kmMat4PerspectiveProjection(&projection, 45,
-                                (float)getDisplayWidth() / getDisplayHeight(), 0.1, 10);
+                                (float)getDisplayWidth() / getDisplayHeight(), 0.1, 20);
 
     glViewport(0, 0, getDisplayWidth(), getDisplayHeight());
-
     // initialises glprint's matrix, shader and texture
     initGlPrint(getDisplayWidth(), getDisplayHeight());
 
@@ -198,7 +198,8 @@ int main()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glDisable(GL_BLEND);
     glEnable(GL_DEPTH_TEST);
-    glClearColor(0.1, 0.1, 0.1, 1);
+    
+    glClearColor(0.7, 0.7, 0.7, 1);
     glClearDepthf(1.0);
 
     // count each frame
@@ -284,9 +285,7 @@ void renderLegWithJoints(float x1, float y1, float z1, float x2, float y2, float
     kmMat4Multiply(&mv, &mv, &model);	// view, model matrix for lighting
     glBindTexture(GL_TEXTURE_2D, cubeTex);
     drawObj(&cylObj, &mvp, &mv,lightDir,viewDir);
-
 //	----
-
     kmMat4Identity(&model);
     kmMat4Translation(&model, x1, y1, z1);
     kmMat4Scaling(&scaleMatrix, 0.05, 0.05, 0.05);
@@ -295,14 +294,9 @@ void renderLegWithJoints(float x1, float y1, float z1, float x2, float y2, float
     kmMat4Multiply(&mvp, &mvp, &model);	// model, view, projection combined matrix
     kmMat4Assign(&mv, &view);
     kmMat4Multiply(&mv, &mv, &model);	// view, model matrix for lighting
-
     glBindTexture(GL_TEXTURE_2D, ballTex);
     drawObj(&ballObj, &mvp, &mv,lightDir,viewDir);
-
 //	----
-
-//	----
-
     kmMat4Identity(&model);
     kmMat4Translation(&model, x2, y2, z2);
     kmMat4Scaling(&scaleMatrix, 0.05, 0.05, 0.05);
@@ -311,11 +305,8 @@ void renderLegWithJoints(float x1, float y1, float z1, float x2, float y2, float
     kmMat4Multiply(&mvp, &mvp, &model);	// model, view, projection combined matrix
     kmMat4Assign(&mv, &view);
     kmMat4Multiply(&mv, &mv, &model);	// view, model matrix for lighting
-
     glBindTexture(GL_TEXTURE_2D, ballTex);
     drawObj(&ballObj, &mvp, &mv,lightDir,viewDir);
-
-//	----
 }
 
 void render()
